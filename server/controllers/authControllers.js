@@ -35,7 +35,7 @@ const authorizeUser = async (req,res) => {
         const userExists = await User.findOne({'regNo': `${regNo}`})
         if(!userExists) res.status(403).send('No such user in database')
         else{
-            res.status(200).send('User authorized')
+            res.status(200).send(req.session.user)
         }
     }
 }

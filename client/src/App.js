@@ -5,6 +5,7 @@ import {Routes, Route} from 'react-router-dom'
 import Landing from './pages/Landing';
 import Login from './pages/Login';
 import Selection from './pages/Selection';
+import Instructions from './pages/Instructions';
 import Logout from './pages/Logout';
 
 // Import global styles
@@ -20,6 +21,7 @@ function App() {
         <Route path='/' element={<Landing/>} />
         <Route path='/login' element={<Login/>} />
         <Route path='/selection' element={<Selection/>} />
+        <Route path='/instructions' element={<Instructions/>} />
         <Route path='/logout' element={<Logout/>} />
         <Route path='*' element={<h1>Oh-Oh! Page not found. 404</h1>}/>
       </Routes>

@@ -1,5 +1,5 @@
 // Import hooks and packages
-import { useEffect } from "react";
+import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 
@@ -8,6 +8,7 @@ import PrecisionManufacturingIcon from "@mui/icons-material/PrecisionManufacturi
 import ColorLensIcon from "@mui/icons-material/ColorLens";
 import AssessmentIcon from "@mui/icons-material/Assessment";
 
+// Authorize user with server
 const authorizeUser = async (navigate) => {
     try{
         await axios.get(`${process.env.REACT_APP_SERVER_URL+'/auth/authorize'}`)
@@ -18,11 +19,17 @@ const authorizeUser = async (navigate) => {
     }
 }
 
+// Selection Page
 const Selection = () => {
 
     const navigate = useNavigate()                      // eslint-disable-next-line
     useEffect(function(){authorizeUser(navigate)},[])
 
+    const [domain, setDomain] = useState(false)
+
+    const domainValue = (e) => {
+        setDomain(e.target.value)
+    }
     return (
         <div style={{height: '100vh'}} className="domainPage">
             <div className="mainForm">
@@ -30,7 +37,7 @@ const Selection = () => {
                 <p className="para">Select a domain and Start Test for Round 1</p>
                 <div className="domains">
                     {/* <div onChange={domainValue}> */}
-                    <div>
+                    <div onChange={domainValue}>
                         {/* <div className={tech ? 'domainRowDead' : 'domainRow'}> */}
                         <div className={'domainRow'}>
                             <PrecisionManufacturingIcon style={{ fontSize: 55 }} />
@@ -79,10 +86,10 @@ const Selection = () => {
                     </div>
                 </div>
                 <Link
-                    // to={linkTo}
-                    to={'/'}
+                    to={`${domain ? '/instructions' : '/selection'}`}
+                    state={{domain: domain}}
                     // className={`domainbtn1 ${domain ? "" : "btn1_disabled"}`}>
-                    className={`domainbtn1 ${"btn1_disabled"}`}
+                    className={`domainbtn1`}
                 >
                     Start Quiz
                 </Link>

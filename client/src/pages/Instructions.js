@@ -1,11 +1,14 @@
+// Import hooks and packages
 import { useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import '../styles/global.css'
 
+// Function to capitalize the first letter of a string
 function capitalize(string) {
     return string?.charAt(0).toUpperCase() + string?.slice(1);
 }
 
+// Instructions Page
 const Instructions = () => {
 
     const navigate = useNavigate()

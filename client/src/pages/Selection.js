@@ -7,6 +7,9 @@ import axios from "axios";
 import PrecisionManufacturingIcon from "@mui/icons-material/PrecisionManufacturing";
 import ColorLensIcon from "@mui/icons-material/ColorLens";
 import AssessmentIcon from "@mui/icons-material/Assessment";
+import Engineering from "@mui/icons-material/Engineering"
+
+/* ---------------------------------------------------------------- */
 
 // Authorize user with server
 const authorizeUser = async (navigate) => {
@@ -15,9 +18,11 @@ const authorizeUser = async (navigate) => {
     }
     catch(err){
         console.log(err.response.data)
-        navigate('/login')
+        navigate('/')
     }
 }
+
+/* ---------------------------------------------------------------- */
 
 // Selection Page
 const Selection = () => {
@@ -34,14 +39,16 @@ const Selection = () => {
         <div style={{height: '100vh'}} className="domainPage">
             <div className="mainForm">
                 <h1 className="heading">Choose a Domain</h1>
-                <p className="para">Select a domain and Start Test for Round 1</p>
+                <p className="para">Then proceed to view respective subdomains</p>
                 <div className="domains">
                     {/* <div onChange={domainValue}> */}
                     <div onChange={domainValue}>
+
+                        {/* Technical */}
                         {/* <div className={tech ? 'domainRowDead' : 'domainRow'}> */}
                         <div className={'domainRow'}>
                             <PrecisionManufacturingIcon style={{ fontSize: 55 }} />
-                            <div className="info">
+                            <div style={{marginLeft: '10px'}} className="info">
                                 <h1 className="heading">Technical</h1>
                                 <p className="para">10 Questions . 10 mins . Objective Type</p>
                             </div>
@@ -49,10 +56,11 @@ const Selection = () => {
                             <input type='radio' value='Technical' name='selection' id='technical' disabled={false}></input>
                         </div>
                             
-                            {/* <div className={man ? 'domainRowDead' : 'domainRow'}> */}
+                        {/* Management */}
+                        {/* <div className={man ? 'domainRowDead' : 'domainRow'}> */}
                         <div className={'domainRow'}>
                             <AssessmentIcon style={{ fontSize: 55 }} />
-                            <div className="info">
+                            <div style={{marginLeft: '10px'}} className="info">
                                 <h1 className="heading">Management</h1>
                                 <p className="para">5 Questions . No Time . Subjective Type</p>
                             </div>
@@ -66,10 +74,31 @@ const Selection = () => {
                                 className="input">
                             </input>
                         </div>
-                            {/* <div className={des ? 'domainRowDead' : 'domainRow'}> */}
+
+                        {/* Project */}
+                        <div className={'domainRow'}>
+                            <Engineering style={{ fontSize: 55 }} />
+                            <div style={{marginLeft: '10px'}} className="info">
+                                <h1 className="heading">Project</h1>
+                                <p className="para">10 Questions . 10 mins . Objective Type</p>
+                            </div>
+                            <input
+                                type='radio'
+                                value='project'
+                                name='selection'
+                                id='project'
+                                // disabled={des}
+                                disabled={false}
+                                className="input">
+                            </input>
+                        </div> 
+
+
+                        {/* Design */}
+                        {/* <div className={des ? 'domainRowDead' : 'domainRow'}> */}
                         <div className={'domainRow'}>
                             <ColorLensIcon style={{ fontSize: 55 }} />
-                            <div className="info">
+                            <div style={{marginLeft: '10px'}} className="info">
                                 <h1 className="heading">Design</h1>
                                 <p className="para">10 Questions . 10 mins . Objective Type</p>
                             </div>
@@ -86,12 +115,12 @@ const Selection = () => {
                     </div>
                 </div>
                 <Link
-                    to={`${domain ? '/instructions' : '/selection'}`}
+                    to={`${domain ? '/'+domain.toLowerCase() : '/selection'}`}
                     state={{domain: domain}}
-                    // className={`domainbtn1 ${domain ? "" : "btn1_disabled"}`}>
-                    className={`domainbtn1`}
+                    style={{marginTop: '25px', marginBottom: '-10px'}}
+                    className={`btn1`}
                 >
-                    Start Quiz
+                    Proceed
                 </Link>
             </div>
         </div>

@@ -3,6 +3,9 @@ import { useState, useEffect } from "react"
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios"
 
+// Import components
+import Loader from '../Loader'
+
 // Import assets
 import Info from "@mui/icons-material/Info"
 import Apple from "@mui/icons-material/Apple";
@@ -14,7 +17,7 @@ import Psychology from "@mui/icons-material/PsychologyAlt";
 
 const getUser = async (navigate, setUser) => {
     try{
-        const res = await axios.get(`${process.env.REACT_APP_SERVER_URL+'/domains/technical'}`)
+        const res = await axios.get(`${process.env.REACT_APP_SERVER_URL+'/auth/authorize'}`)
         console.log(res.data)
         setUser(res.data)
     }
@@ -49,7 +52,7 @@ const Technical = () => {
     }
     attempted = ios || web || android || ml
 
-    return (
+    return !user ? <Loader/> : (
         <div style={{height: '100vh'}} className="domainPage">
             <div className="mainForm">
                 <h1 className="heading">Choose a Subdomain</h1>
@@ -100,7 +103,7 @@ const Technical = () => {
                 </div>
                 <Link
                     to={`${domain ? '/instructions' : '/technical'}`}
-                    state={{domain: domain}}
+                    state={{domain: 'technical', subdomain: domain}}
                     style={{marginTop: '25px', marginBottom: '-10px'}}
                     className={`btn1`}
                 >

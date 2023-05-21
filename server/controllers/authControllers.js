@@ -1,8 +1,6 @@
 const User = require('../models/User')
 
 const authenticateUser = async (req,res) => {
-    console.log(req.body)
-
     try{
         const userExists = await User.findOne({'regNo': `${req.body.regNo}`})
         if(!userExists) res.status(403).send('User not found in database, not part of ADG')
@@ -16,7 +14,8 @@ const authenticateUser = async (req,res) => {
     
                 req.session.user = {
                     regNo: userExists.regNo, 
-                    yearOfStudy: 24-userExists.regNo.slice(0,2)
+                    yearOfStudy: userExists.yearOfStudy,
+                    attemptedDomains: JSON.parse(userExists.attempted)
                 }
                 res.status(200).send(req.session.user)
             })

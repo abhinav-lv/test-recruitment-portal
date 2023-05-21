@@ -1,12 +1,31 @@
 // Import hooks and packages
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
+import axios from 'axios';
 import { Link, useLocation, useNavigate } from 'react-router-dom'
-import '../styles/global.css'
+
+// Import components
+import Loader from '../components/Loader';
+
+/* ---------------------------------------------------------------- */
+
+// Authorize user with server
+const authorizeUser = async (navigate, setUser) => {
+    try{
+        const res = await axios.get(`${process.env.REACT_APP_SERVER_URL+'/auth/authorize'}`)
+        setUser(res.data)
+    }
+    catch(err){
+        console.err(err.response.data)
+        navigate('/')
+    }
+}
 
 // Function to capitalize the first letter of a string
 function capitalize(string) {
     return string?.charAt(0).toUpperCase() + string?.slice(1);
 }
+
+/* ---------------------------------------------------------------- */
 
 // Instructions Page
 const Instructions = () => {
@@ -14,18 +33,20 @@ const Instructions = () => {
     const navigate = useNavigate()
     const location = useLocation()
 
-    useEffect(() => {                       
-        if(!location.state) navigate('/') // eslint-disable-next-line
+    const [user, setUser] = useState(false)
+    useEffect(() => {                      
+        if(!location.state) navigate('/selection') // eslint-disable-next-line
+        else authorizeUser(navigate, setUser)
     },[])
 
-    const domain = location.state?.domain
-    console.log(domain)
+    const domains = location.state
+    const yearOfStudy = user?.yearOfStudy
 
-    return (
+    return !user ? <Loader/> : (
         <div style={{height: '100vh'}} className="instrCon">
             <div className="instrMain">
                 <div className="instrLeft">
-                    {`${capitalize(domain)} Quiz`}
+                    {`${capitalize(domains.domain)} - ${capitalize(domains.subdomain)} Quiz`}
                 </div>
                 <div className="instrRight">
                     <div className='heading2'>
@@ -39,28 +60,28 @@ const Instructions = () => {
                         <li>
                             The participant can attempt the quiz only ONCE.
                         </li>
-                        {domain === "Technical2" ? (null) : (
+                        {domains.domain === "Technical2" ? (null) : (
                         <li>
                             {
-                            domain === "Technical"
+                            domains.domain === "Technical"
                             ? "The quiz will have 10 multiple choice questions."
-                            : domain === "Management"
+                            : domains.domain === "Management"
                                 ? "The quiz will have 5 Long Answer type questions."
                                 : "The quiz will have 10 multiple choice questions."
                             }
                          </li>
                         )} 
-                        {domain === "Technical2" ? (null) : (
+                        {domains.domain === "Technical2" ? (null) : (
                          <li>
                             {
-                            domain === "Technical"
+                            domains.domain === "Technical"
                             ? "10 minutes will be provided to complete the quiz."
-                            : domain === "Management"
+                            : domains.domain === "Management"
                                 ? "There is no time limit for completing the quiz."
                                 : "10 minutes will be provided to complete the quiz."}
                         </li>
                         )}
-                        {domain === "Technical2" ? (
+                        {domains.domain === "Technical2" ? (
                         <li>
                             In case the participant tries to close the web portal or go back from the
                             quiz, the quiz will be auto submitted.
@@ -73,7 +94,11 @@ const Instructions = () => {
                         </li>
                         )}
                     </ul>
-                    <Link  to={'/'} className='instrbtn1'>
+                    <Link 
+                        to={'/test'}
+                        state={{domain : domains.domain, subdomain: domains.subdomain, yearOfStudy}}
+                        className='instrbtn1'
+                    >
                         Start Test
                     </Link>
      

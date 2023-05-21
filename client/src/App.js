@@ -6,11 +6,12 @@ import Landing from './pages/Landing';
 import Login from './pages/Login';
 import Selection from './pages/Selection';
 import Instructions from './pages/Instructions';
-// import TechQuiz from './pages/quizzes/TechQuiz';
+import TechQuiz from './pages/quizzes/TechQuiz';
 import Technical from './components/domainSelectors/Technical';
 import Management from './components/domainSelectors/Management';
 import Project from './components/domainSelectors/Project';
 import Design from './components/domainSelectors/Design';
+import Admin from './pages/Admin';
 import Logout from './pages/Logout';
 
 // Import global styles
@@ -31,6 +32,8 @@ function App() {
         <Route path='/management' element={<Management/>} />
         <Route path='/project' element={<Project/>} />
         <Route path='/design' element={<Design/>} />
+        <Route path='/test' element={<TechQuiz/>} />
+        <Route path='/admin' element={<Admin/>} />
         <Route path='/logout' element={<Logout/>} />
         <Route path='*' element={<h1>Oh-Oh! Page not found. 404</h1>}/>
       </Routes>

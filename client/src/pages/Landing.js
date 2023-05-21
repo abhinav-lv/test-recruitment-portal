@@ -1,8 +1,12 @@
-// Import packages
+// Import hooks and packages
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 
 // Import global styles
 import '../styles/global.css'
+
+// Import components
+import Loader from '../components/Loader'
 
 // Import assets
 import Portal from "../assets/img/Portal.svg"
@@ -13,7 +17,15 @@ import adglogo from "../assets/img/adg_logo.svg";
 
 // Landing page
 const Landing = () => {
-    return (
+
+    const [loaded, setLoaded] = useState(false)
+
+    useEffect(function(){
+        setLoaded(true)
+    },[])
+
+    if(!loaded) return <Loader/>
+    else return (
         <div className="landing_page">
             <div className="left">
                 <div className="navbar">

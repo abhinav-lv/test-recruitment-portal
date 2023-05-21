@@ -1,13 +1,27 @@
 // Import hooks and packages
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import axios from 'axios'
 import { useNavigate } from 'react-router-dom';
 
-// Import global styles
-import '../styles/global.css'
+// Import components
+import Loader from '../components/Loader';
 
 // Import assets
 import back_img from "../assets/img/back_img_main.svg";
+
+/* ---------------------------------------------------------------- */
+
+// Authorize user with server
+const authorizeUser = async (navigate, setLoaded) => {
+    try{
+        await axios.get(`${process.env.REACT_APP_SERVER_URL+'/auth/authorize'}`)
+        navigate('/selection')
+    }
+    catch(err){
+        setLoaded(true)
+        console.log(err.response.data)
+    }
+}
 
 /* ---------------------------------------------------------------- */
 
@@ -26,6 +40,9 @@ const Login = () => {
         regNo: '',
         password: ''
     })
+    const [loaded, setLoaded] = useState()
+
+    useEffect(function(){authorizeUser(navigate, setLoaded)},[])
 
     const handleChange = (e) => {
         const name = e.target.name
@@ -60,7 +77,8 @@ const Login = () => {
         }
     }
 
-    return (
+    if(!loaded) return <Loader/>
+    else return (
         <div className="login_page">
             <div className="left">
                 <div className="main_form">

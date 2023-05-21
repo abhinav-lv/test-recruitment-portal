@@ -9,15 +9,19 @@ import ColorLensIcon from "@mui/icons-material/ColorLens";
 import AssessmentIcon from "@mui/icons-material/Assessment";
 import Engineering from "@mui/icons-material/Engineering"
 
+// Import components
+import Loader from "../components/Loader";
+
 /* ---------------------------------------------------------------- */
 
 // Authorize user with server
-const authorizeUser = async (navigate) => {
+const authorizeUser = async (navigate, setUser) => {
     try{
-        await axios.get(`${process.env.REACT_APP_SERVER_URL+'/auth/authorize'}`)
+        const res = await axios.get(`${process.env.REACT_APP_SERVER_URL+'/auth/authorize'}`)
+        setUser(res.data)
     }
     catch(err){
-        console.log(err.response.data)
+        console.err(err.response.data)
         navigate('/')
     }
 }
@@ -27,15 +31,26 @@ const authorizeUser = async (navigate) => {
 // Selection Page
 const Selection = () => {
 
-    const navigate = useNavigate()                      // eslint-disable-next-line
-    useEffect(function(){authorizeUser(navigate)},[])
+    const navigate = useNavigate() 
+    const [user, setUser] = useState(false)                     // eslint-disable-next-line
+    useEffect(function(){authorizeUser(navigate, setUser)},[])
 
     const [domain, setDomain] = useState(false)
 
     const domainValue = (e) => {
         setDomain(e.target.value)
     }
-    return (
+
+    let bleh, tech, man, proj, des
+    if(user){
+        bleh = user.attemptedDomains
+        tech = bleh.ios || bleh.web || bleh.android || bleh.ml
+        man = (bleh.marketing || bleh.editorial) && bleh.sponsorship && bleh.operations && bleh.logistics
+        proj = bleh.rnd || bleh.projMgmt 
+        des = (bleh.poster || bleh.uiux) && bleh.video && bleh.threed
+    }
+
+    return !user ? <Loader/> : (
         <div style={{height: '100vh'}} className="domainPage">
             <div className="mainForm">
                 <h1 className="heading">Choose a Domain</h1>
@@ -45,20 +60,17 @@ const Selection = () => {
                     <div onChange={domainValue}>
 
                         {/* Technical */}
-                        {/* <div className={tech ? 'domainRowDead' : 'domainRow'}> */}
-                        <div className={'domainRow'}>
+                        <div className={tech ? 'domainRowDead' : 'domainRow'}>
                             <PrecisionManufacturingIcon style={{ fontSize: 55 }} />
                             <div style={{marginLeft: '10px'}} className="info">
                                 <h1 className="heading">Technical</h1>
                                 <p className="para">10 Questions . 10 mins . Objective Type</p>
                             </div>
-                            {/* <input type='radio' value='Technical' name='selection' id='technical' disabled={tech}></input> */}
-                            <input type='radio' value='Technical' name='selection' id='technical' disabled={false}></input>
+                            <input type='radio' value='Technical' name='selection' id='technical' disabled={tech}></input>
                         </div>
                             
                         {/* Management */}
-                        {/* <div className={man ? 'domainRowDead' : 'domainRow'}> */}
-                        <div className={'domainRow'}>
+                        <div className={man ? 'domainRowDead' : 'domainRow'}>
                             <AssessmentIcon style={{ fontSize: 55 }} />
                             <div style={{marginLeft: '10px'}} className="info">
                                 <h1 className="heading">Management</h1>
@@ -69,14 +81,13 @@ const Selection = () => {
                                 value='Management'
                                 name='selection'
                                 id='management'
-                                // disabled={man}
-                                disabled={false}
+                                disabled={man}
                                 className="input">
                             </input>
                         </div>
 
                         {/* Project */}
-                        <div className={'domainRow'}>
+                        <div className={proj ? 'domainRowDead' : 'domainRow'}>
                             <Engineering style={{ fontSize: 55 }} />
                             <div style={{marginLeft: '10px'}} className="info">
                                 <h1 className="heading">Project</h1>
@@ -87,16 +98,14 @@ const Selection = () => {
                                 value='project'
                                 name='selection'
                                 id='project'
-                                // disabled={des}
-                                disabled={false}
+                                disabled={proj}
                                 className="input">
                             </input>
                         </div> 
 
 
                         {/* Design */}
-                        {/* <div className={des ? 'domainRowDead' : 'domainRow'}> */}
-                        <div className={'domainRow'}>
+                        <div className={des ? 'domainRowDead' : 'domainRow'}>
                             <ColorLensIcon style={{ fontSize: 55 }} />
                             <div style={{marginLeft: '10px'}} className="info">
                                 <h1 className="heading">Design</h1>
@@ -107,8 +116,7 @@ const Selection = () => {
                                 value='Design'
                                 name='selection'
                                 id='design'
-                                // disabled={des}
-                                disabled={false}
+                                disabled={des}
                                 className="input">
                             </input>
                         </div> 

@@ -3,6 +3,9 @@ import { useState, useEffect } from "react"
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios"
 
+// Import components
+import Loader from "../Loader";
+
 // Import assets
 import Info from "@mui/icons-material/Info"
 import Science from "@mui/icons-material/Science"
@@ -12,8 +15,7 @@ import Layers from "@mui/icons-material/Layers"
 
 const getUser = async (navigate, setUser) => {
     try{
-        const res = await axios.get(`${process.env.REACT_APP_SERVER_URL+'/domains/project'}`)
-        console.log(res.data)
+        const res = await axios.get(`${process.env.REACT_APP_SERVER_URL+'/auth/authorize'}`)
         setUser(res.data)
     }
     catch(err){
@@ -40,11 +42,11 @@ const Project = () => {
     let research, project, attempted
     if(user){
         research = user.attemptedDomains.rnd
-        project = user.attemptedDomains.projectMgmt
+        project = user.attemptedDomains.projMgmt
     }
     attempted = project || research
 
-    return (
+    return !user ? <Loader/> : (
         <div style={{height: '100vh'}} className="domainPage">
             <div className="mainForm">
                 <h1 className="heading">Choose a Subdomain</h1>
@@ -69,13 +71,13 @@ const Project = () => {
                                 <h1 className="heading">Project Management</h1>
                                 <p className="para">10 Questions . 10 mins . Objective Type</p>
                             </div>
-                            <input type='radio' value='project' name='selection' id='project-mgmt' disabled={attempted}></input>
+                            <input type='radio' value='projMgmt' name='selection' id='projMgmt' disabled={attempted}></input>
                         </div>
                     </div>
                 </div>
                 <Link
                     to={`${domain ? '/instructions' : '/technical'}`}
-                    state={{domain: domain}}
+                    state={{domain: 'project', subdomain: domain}}
                     style={{marginTop: '25px', marginBottom: '-10px'}}
                     className={`btn1`}
                 >

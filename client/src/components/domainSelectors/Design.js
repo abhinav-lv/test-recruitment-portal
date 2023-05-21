@@ -3,6 +3,9 @@ import { useState, useEffect } from "react"
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios"
 
+// Import components
+import Loader from "../Loader";
+
 // Import assets
 import Info from "@mui/icons-material/Info"
 import Architecture from "@mui/icons-material/Architecture"
@@ -14,8 +17,7 @@ import ViewInAr from '@mui/icons-material/ViewInAr';
 
 const getUser = async (navigate, setUser) => {
     try{
-        const res = await axios.get(`${process.env.REACT_APP_SERVER_URL+'/domains/design'}`)
-        console.log(res.data)
+        const res = await axios.get(`${process.env.REACT_APP_SERVER_URL+'/auth/authorize'}`)
         setUser(res.data)
     }
     catch(err){
@@ -47,7 +49,7 @@ const Design = () => {
         threed = user.attemptedDomains.threed
     }
 
-    return (
+    return !user ? <Loader/> : (
         <div style={{height: '100vh'}} className="domainPage">
             <div className="mainForm">
                 <h1 className="heading">Choose a Subdomain</h1>
@@ -89,7 +91,7 @@ const Design = () => {
                         </div>
 
                         {/* 3D Design */}
-                        <div className={video ? 'domainRowDead' : 'domainRow'}>
+                        <div className={threed ? 'domainRowDead' : 'domainRow'}>
                             <ViewInAr style={{ fontSize: 55 }} />
                             <div style={{marginLeft: '10px'}} className="info">
                                 <h1 className="heading">3D Design</h1>
@@ -102,7 +104,7 @@ const Design = () => {
                 </div>
                 <Link
                     to={`${domain ? '/instructions' : '/technical'}`}
-                    state={{domain: domain}}
+                    state={{domain: 'design', subdomain: domain}}
                     style={{marginTop: '25px', marginBottom: '-10px'}}
                     className={`btn1`}
                 >

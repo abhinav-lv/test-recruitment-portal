@@ -3,6 +3,9 @@ import { useState, useEffect } from "react"
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios"
 
+// Import components
+import Loader from "../Loader";
+
 // import assets
 import People from "@mui/icons-material/People"
 import Edit from "@mui/icons-material/Edit"
@@ -15,8 +18,7 @@ import Info from "@mui/icons-material/Info"
 
 const getUser = async (navigate, setUser) => {
     try{
-        const res = await axios.get(`${process.env.REACT_APP_SERVER_URL+'/domains/management'}`)
-        console.log(res.data)
+        const res = await axios.get(`${process.env.REACT_APP_SERVER_URL+'/auth/authorize'}`)
         setUser(res.data)
     }
     catch(err){
@@ -50,7 +52,7 @@ const Management = () => {
         logistics = user.attemptedDomains.logistics
     }
     
-    return (
+    return !user ? <Loader/> : (
         <div style={{height: '100vh'}} className="domainPage">
             <div className="mainForm">
                 <h1 className="heading">Choose a Subdomain</h1>
@@ -107,13 +109,13 @@ const Management = () => {
                                 <h1 className="heading">Logistics</h1>
                                 <p className="para">10 Questions . 10 mins . Objective Type</p>
                             </div>
-                            <input type='radio' value='Logistics' name='selection' id='management-Logistics' disabled={logistics}></input>
+                            <input type='radio' value='logistics' name='selection' id='management-logistics' disabled={logistics}></input>
                         </div>
                     </div>
                 </div>
                 <Link
                     to={`${domain ? '/instructions' : '/management'}`}
-                    state={{domain: domain}}
+                    state={{domain: 'management', subdomain: domain}}
                     style={{marginTop: '25px', marginBottom: '-10px'}}
                     className={`btn1`}
                 >

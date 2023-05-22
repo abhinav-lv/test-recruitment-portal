@@ -1,6 +1,6 @@
 /* Import hooks and packages */
-import { useState, useEffect } from "react";
-import { useNavigate, useLocation } from 'react-router-dom'
+import { useState, useEffect, useCallback } from "react";
+import { useNavigate, useLocation, useBeforeUnload } from 'react-router-dom'
 import axios from "axios";
 
 /* import Components */
@@ -35,9 +35,12 @@ const getQuestions = async (state, setState, location) => {
 /* Quiz component */
 const TechQuiz = () => {
 
+    // Define hooks
     const navigate = useNavigate()
     const location = useLocation()
 
+    // Initialize states
+    const [isVisible, setIsVisible] = useState(!document.hidden)
     const [state, setState] = useState({
         currentQuestion: 0,
         questions: false,
@@ -48,6 +51,23 @@ const TechQuiz = () => {
         problem: {status: false, message: ''}
     })
 
+    const onUnload = (e) => {
+        e.preventDefault()
+        onSubmit()
+    }  
+
+    // Double check with user on page reload while giving test
+    useBeforeUnload(onUnload)
+
+    // Finish the test session if user changes tabs
+    const handleVisibility = useCallback(() => setIsVisible(!document.hidden), [])
+    useEffect(() => {
+        document.addEventListener('visibilitychange', handleVisibility)
+        return () => {
+            document.removeEventListener('visibilitychange', handleVisibility)
+        }
+    }, [handleVisibility])
+
     useEffect(function(){
         if(!location.state) navigate('/selection')
         else{
@@ -55,6 +75,11 @@ const TechQuiz = () => {
         }   // eslint-disable-next-line
     },[])
 
+    useEffect(() => {                   
+        if(!isVisible) onConfirm()       // eslint-disable-next-line
+    }, [isVisible])
+
+    // Handler functions
     const optionsArray = ['a', 'b', 'c', 'd']
 
     // Update selected option
@@ -130,6 +155,7 @@ const TechQuiz = () => {
         }
     }
 
+    // On confirming submit
     const onConfirm = async () => {
         hideModal()
         // console.log(state.responses)
@@ -151,6 +177,7 @@ const TechQuiz = () => {
         }
     }
 
+    // JSX
     if(!state.questions){
         return <p>Error</p>
     }

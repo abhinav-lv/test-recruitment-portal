@@ -13,6 +13,7 @@ import Project from './components/domainSelectors/Project';
 import Design from './components/domainSelectors/Design';
 import Admin from './pages/Admin';
 import Logout from './pages/Logout';
+import Rough from './pages/Rough';
 
 // Import global styles
 import './styles/global.css'
@@ -35,6 +36,7 @@ function App() {
         <Route path='/test' element={<TechQuiz/>} />
         <Route path='/admin' element={<Admin/>} />
         <Route path='/logout' element={<Logout/>} />
+        <Route path='/rough' element={<Rough/>} />
         <Route path='*' element={<h1>Oh-Oh! Page not found. 404</h1>}/>
       </Routes>
     </div>

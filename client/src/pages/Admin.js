@@ -52,6 +52,20 @@ const Admin = () => {
         }
     }
 
+    const handleDomainChange = (e) => {
+        const domain = e.target.value
+        let subdomain = ''
+
+        domain === 'technical' ? subdomain = 'ios'
+        : domain === 'management' ? subdomain = 'marketing'
+        : domain === 'project' ? subdomain = 'rnd'
+        : subdomain = 'poster'
+
+        // console.log(domain, subdomain)
+        setDomain(domain)
+        setSubDomain(subdomain)
+    }
+
     return (
         <div>
             <input
@@ -83,7 +97,7 @@ const Admin = () => {
                 <select
                      name="domain"
                      value={domain}
-                     onChange={(e) => setDomain(e.target.value)}
+                     onChange={handleDomainChange}
                      style={{marginLeft: '20px'}}
                 >
                     <option value="technical">Technical</option>

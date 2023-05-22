@@ -42,6 +42,7 @@ const Login = () => {
     })
     const [loaded, setLoaded] = useState()
 
+    // eslint-disable-next-line
     useEffect(function(){authorizeUser(navigate, setLoaded)},[])
 
     const handleChange = (e) => {

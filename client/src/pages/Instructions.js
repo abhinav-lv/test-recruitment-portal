@@ -35,8 +35,8 @@ const Instructions = () => {
 
     const [user, setUser] = useState(false)
     useEffect(() => {                      
-        if(!location.state) navigate('/selection') // eslint-disable-next-line
-        else authorizeUser(navigate, setUser)
+        if(!location.state) navigate('/selection') 
+        else authorizeUser(navigate, setUser)           // eslint-disable-next-line
     },[])
 
     const domains = location.state

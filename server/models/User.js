@@ -15,7 +15,10 @@ const userSchema = new Schema({
     attempted: {type: String, default: "{}"},
 
     // Responses
-    responses: {type: Array, default: []}
+    responses: {type: Array, default: []}, 
+
+    // Time left to attempt tests
+    timeLeftToAttempt: {type: Array, default: [60,0]}
 
 });
 const UserModel = mongoose.model('User', userSchema);

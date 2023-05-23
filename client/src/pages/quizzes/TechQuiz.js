@@ -30,6 +30,16 @@ const getQuestions = async (state, setState, location) => {
     }
 }
 
+const startTest = async () => {
+    try{
+        const res = await axios.get('/test/start')
+        console.log(res.data)
+    }
+    catch(err){
+        console.error(err.response)
+    }
+}
+
 /* ---------------------------------------------------------------- */
 
 /* Quiz component */
@@ -53,7 +63,6 @@ const TechQuiz = () => {
 
     const onUnload = (e) => {
         e.preventDefault()
-        onSubmit()
     }  
 
     // Double check with user on page reload while giving test
@@ -69,6 +78,7 @@ const TechQuiz = () => {
     }, [handleVisibility])
 
     useEffect(function(){
+        startTest()
         if(!location.state) navigate('/selection')
         else{
             getQuestions(state, setState, location) 
@@ -169,7 +179,7 @@ const TechQuiz = () => {
         const body = { domain, subdomain, responses }
         try{
             const res = await axios.post('/responses/send', body)
-            console.log(res)
+            console.log(res.data)
             navigate('/selection')
         }
         catch(err){

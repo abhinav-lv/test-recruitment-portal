@@ -1,7 +1,7 @@
 // Import hooks and packages
 import { useState, useEffect } from 'react';
-import axios from 'axios'
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios'
 
 // Import components
 import Loader from '../components/Loader';

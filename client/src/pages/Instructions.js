@@ -9,10 +9,15 @@ import Loader from '../components/Loader';
 /* ---------------------------------------------------------------- */
 
 // Authorize user with server
-const authorizeUser = async (navigate, setUser) => {
+const authorizeUser = async (navigate, setUser, location) => {
     try{
         const res = await axios.get(`${process.env.REACT_APP_SERVER_URL+'/auth/authorize'}`)
-        setUser(res.data)
+        
+        const domains = location.state
+        const yearOfStudy = res.data.yearOfStudy
+        
+        if(res.data.test.isTakingTest) navigate('/test', {state: {domain : domains.domain, subdomain: domains.subdomain, yearOfStudy}})
+        else setUser(res.data)
     }
     catch(err){
         console.err(err.response.data)
@@ -36,7 +41,7 @@ const Instructions = () => {
     const [user, setUser] = useState(false)
     useEffect(() => {                      
         if(!location.state) navigate('/selection') 
-        else authorizeUser(navigate, setUser)           // eslint-disable-next-line
+        else authorizeUser(navigate, setUser, location)           // eslint-disable-next-line
     },[])
 
     const domains = location.state

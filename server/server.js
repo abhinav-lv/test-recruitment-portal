@@ -7,6 +7,7 @@ const mongoose = require('mongoose')
 const authRoutes = require('./routes/authRoutes')
 const questionRoutes = require('./routes/questionRoutes')
 const responseRoutes = require('./routes/responseRoutes')
+const testRoutes = require('./routes/testRoutes')
 
 // Import Redis Session Store
 const {redisStore} = require('./sessions/RedisStore');
@@ -41,6 +42,9 @@ app.use('/questions', questionRoutes)
 
 // Responses
 app.use('/responses', responseRoutes)
+
+// Test
+app.use('/test', testRoutes)
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`Server started on port ${PORT}`));

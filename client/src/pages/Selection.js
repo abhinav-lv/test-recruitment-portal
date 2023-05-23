@@ -18,10 +18,11 @@ import Loader from "../components/Loader";
 const authorizeUser = async (navigate, setUser) => {
     try{
         const res = await axios.get(`${process.env.REACT_APP_SERVER_URL+'/auth/authorize'}`)
+        console.log(res.data)
         setUser(res.data)
     }
     catch(err){
-        console.err(err.response.data)
+        console.error(err.response.data)
         navigate('/')
     }
 }
@@ -41,13 +42,14 @@ const Selection = () => {
         setDomain(e.target.value)
     }
 
-    let bleh, tech, man, proj, des
+    let bleh, tech, man, proj, des, remainingTime
     if(user){
         bleh = user.attemptedDomains
         tech = bleh.ios || bleh.web || bleh.android || bleh.ml
         man = (bleh.marketing || bleh.editorial) && bleh.sponsorship && bleh.operations && bleh.logistics
         proj = bleh.rnd || bleh.projMgmt 
         des = (bleh.poster || bleh.uiux) && bleh.video && bleh.threed
+        remainingTime = JSON.parse(user.test.remainingTime)
     }
 
     return !user ? <Loader/> : (
@@ -131,6 +133,7 @@ const Selection = () => {
                     Proceed
                 </Link>
             </div>
+            <div>Remaining Time: {`${remainingTime[0]}:${remainingTime[1]}`}</div>
         </div>
     )
 }

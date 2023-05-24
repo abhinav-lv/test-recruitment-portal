@@ -19,7 +19,7 @@ const authorizeUser = async (navigate, setLoaded) => {
     }
     catch(err){
         setLoaded(true)
-        console.log(err.response.data)
+        // console.log(err.response.data)
     }
 }
 

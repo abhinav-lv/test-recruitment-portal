@@ -1,5 +1,7 @@
 // Import hooks and packages
+import { useEffect } from 'react';
 import {Routes, Route} from 'react-router-dom'
+import axios from 'axios';
 
 // Import pages
 import Landing from './pages/Landing';
@@ -20,8 +22,25 @@ import './styles/global.css'
 
 /* ---------------------------------------------------------------- */
 
+const onClose = async () => {
+  try{
+    await axios.get('/auth/logout')
+  }
+  catch{
+    // some random error that doesn't affect anything, or so I hope
+  }
+}
+
+/* ---------------------------------------------------------------- */
+
 // APP
 function App() {
+
+  useEffect(function(){
+    window.addEventListener('beforeunload', onClose)
+    return () => window.removeEventListener('beforeunload', onClose)
+  },[])
+
   return (
     <div className="App">
       <Routes>

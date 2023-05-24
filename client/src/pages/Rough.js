@@ -1,33 +1,27 @@
-import axios from 'axios'
-
-const onClick1 = async () => {
-    try{
-        const res = await axios.get('/test/start')
-        console.log(res.data)
-    }
-    catch(err){
-        console.log(err)
-    }
-}
-
-const onClick2 = async () => {
-    try{
-        const res = await axios.get('/test/end')
-        console.log(res.data)
-    }
-    catch(err){
-        console.log(err)
-    }
-}
+import { useState, useEffect } from "react"
 
 const Rough = () => {
 
+    const [time, setTime] = useState({minutes: 10, seconds: 0})
+    const update = () => {
+        if(time.seconds === 0){
+            if(time.minutes !== 1){
+                setTime({ minutes: time.minutes-1, seconds: 59 })
+            }
+        }
+        else{
+            setTime({ ...time, seconds: time.seconds-1 })
+        }
+    }
+
+    // eslint-disable-next-line
+    useEffect(function(){setTimeout(update,1000)}, [time])
+
     return (
-        <>
-            <div>User is taking a test</div>
-            <button onClick={onClick1}>Start Test</button>
-            <button onClick={onClick2}>End Test</button>
-        </>
+        <div style={{margin: '50px'}}>
+            <h1>Timer component bitch</h1>
+            <h2>{time.minutes} : {time.seconds}</h2>
+        </div>
     )
 }
 

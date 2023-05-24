@@ -1,11 +1,12 @@
 /* Import hooks and packages */
 import { useState, useEffect, useCallback } from "react";
-import { useNavigate, useLocation, useBeforeUnload } from 'react-router-dom'
+import { useNavigate, useLocation } from 'react-router-dom'
 import axios from "axios";
 
 /* import Components */
 import Modal from "../../components/Modal";
 import Timer from "../../components/Timer";
+import Loader from "../../components/Loader";
 
 /* ---------------------------------------------------------------- */
 
@@ -13,31 +14,41 @@ import Timer from "../../components/Timer";
 const getQuestions = async (state, setState, location) => {
     try{
         const { domain, subdomain, yearOfStudy } = location.state
-        console.log(location.state)
+        // console.log(location.state)
         const res = await axios.post('/questions/get', {
             domain,
             subdomain,
             yearOfStudy,
         })
-        console.log(res.data.questions)
+        // console.log(res.data.questions)
         setState({
             ...state,
             questions: res.data.questions
         })
     }
     catch(err){
-        console.log(err.response)
+        console.error(err.response)
     }
 }
 
-const startTest = async () => {
+const authorizeUser = async (navigate, setUser) => {
     try{
-        const res = await axios.get('/test/start')
-        console.log(res.data)
+        const res = await axios.get(`${process.env.REACT_APP_SERVER_URL+'/auth/authorize'}`)
+        // console.log(res.data)
+        setUser(res.data)
     }
     catch(err){
-        console.error(err.response)
+        console.error(err.response.data)
+        navigate('/')
     }
+}
+
+const getElapsedTime = (time1, time2) => {
+    // return [ minutes, seconds ]
+    const elapsedTime = time2-time1
+    const minutes = Math.floor(elapsedTime/1000/60)
+    const seconds = Math.floor((elapsedTime/1000/60 - minutes)*60)
+    return [minutes, seconds]
 }
 
 /* ---------------------------------------------------------------- */
@@ -51,6 +62,7 @@ const TechQuiz = () => {
 
     // Initialize states
     const [isVisible, setIsVisible] = useState(!document.hidden)
+    const [user, setUser] = useState(false)
     const [state, setState] = useState({
         currentQuestion: 0,
         questions: false,
@@ -61,13 +73,6 @@ const TechQuiz = () => {
         problem: {status: false, message: ''}
     })
 
-    const onUnload = (e) => {
-        e.preventDefault()
-    }  
-
-    // Double check with user on page reload while giving test
-    useBeforeUnload(onUnload)
-
     // Finish the test session if user changes tabs
     const handleVisibility = useCallback(() => setIsVisible(!document.hidden), [])
     useEffect(() => {
@@ -77,19 +82,21 @@ const TechQuiz = () => {
         }
     }, [handleVisibility])
 
+    // Get user and questions asynchronously
     useEffect(function(){
-        startTest()
         if(!location.state) navigate('/selection')
         else{
+            authorizeUser(navigate, setUser)
             getQuestions(state, setState, location) 
         }   // eslint-disable-next-line
     },[])
 
+    // On tab change or browser window close
     useEffect(() => {                   
         if(!isVisible) onConfirm()       // eslint-disable-next-line
     }, [isVisible])
 
-    // Handler functions
+    // Options array
     const optionsArray = ['a', 'b', 'c', 'd']
 
     // Update selected option
@@ -178,8 +185,8 @@ const TechQuiz = () => {
         const { domain, subdomain } = location.state
         const body = { domain, subdomain, responses }
         try{
-            const res = await axios.post('/responses/send', body)
-            console.log(res.data)
+            await axios.post('/responses/send', body)
+            // console.log(res.data)
             navigate('/selection')
         }
         catch(err){
@@ -187,14 +194,34 @@ const TechQuiz = () => {
         }
     }
 
-    // JSX
-    if(!state.questions){
-        return <p>Error</p>
+    let initialMinute=10, initialSecond=0
+    if(user){
+        const remainingTime = JSON.parse(user.test.remainingTime)
+        initialMinute = remainingTime[0] > 10 ? 10 : remainingTime[0]
+        initialSecond = remainingTime[0] > 10 ? 0 : remainingTime[1]
+    }
+    if(user && user.test.isTakingTest){
+        const time1 = new Date(user.test.testStartedAt)
+        const time2 = new Date()
+        const elapsedTime = getElapsedTime(time1,time2)
+        if(initialSecond < elapsedTime[1]){
+            initialMinute -= (elapsedTime[0]+1)
+            initialSecond = initialSecond-elapsedTime[1]+60
+        }
+        else{
+            initialMinute -= elapsedTime[0]
+            initialSecond -= elapsedTime[1]
+        }
+    }
+
+    // JSX ---------------------------------------------------------------------------------
+    if(!state.questions || !user){
+        return <Loader/>
     }
 
     else return (
         <div className="quizMain">
-            <div className="heading">Technical Quiz</div>
+            <div className="heading">{location.state.subdomain} Quiz</div>
                 <div className="question-section">
 
                     {/* QUESTION COUNT  eg: (1/10) */}
@@ -340,7 +367,7 @@ const TechQuiz = () => {
                 />
             </div>
             <div className="timer">
-                <Timer initialMinute={10} initialSeconds={0} onEnd={onConfirm}/>
+                <Timer initialMinute={initialMinute} initialSecond={initialSecond} onEnd={onConfirm}/>
             </div>
         </div>
     </div>

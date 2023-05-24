@@ -1,5 +1,13 @@
 const User = require('../models/User')
 
+const getElapsedTime = (time1, time2) => {
+    // return [ minutes, seconds ]
+    const elapsedTime = time2-time1
+    const minutes = Math.floor(elapsedTime/1000/60)
+    const seconds = Math.floor((elapsedTime/1000/60 - minutes)*60)
+    return [minutes, seconds]
+}
+
 const authenticateUser = async (req,res) => {
     try{
         const userExists = await User.findOne({'regNo': `${req.body.regNo}`})
@@ -20,7 +28,8 @@ const authenticateUser = async (req,res) => {
                     test: {
                         isTakingTest: false, 
                         testStartedAt: '', 
-                        remainingTime: JSON.stringify(userExists.timeLeftToAttempt)
+                        remainingTime: JSON.stringify(userExists.timeLeftToAttempt),
+                        testDetails: {}
                     }
                 }
                 res.status(200).send(req.session.user)
@@ -44,10 +53,36 @@ const authorizeUser = (req,res) => {
 const logUserOut = async (req,res) => {
     if(req.session.user){
         try{
-            const time = JSON.parse(req.session.user.test.remainingTime)
-            const user = await User.updateOne({regNo: `${req.session.user.regNo}`},
-            {$set: {timeLeftToAttempt: time}})
-            // console.log(user)
+            if(req.session.user.test.isTakingTest){
+
+                // Calculate remaining time
+                const time1 = new Date(req.session.user.test.testStartedAt)
+                const time2 = new Date()
+                const elapsedTime = getElapsedTime(time1, time2)
+                const remainingTime = JSON.parse(req.session.user.test.remainingTime)
+
+                if(remainingTime[1] < elapsedTime[1]){
+                    remainingTime[0] -= (elapsedTime[0]+1)
+                    remainingTime[1] = remainingTime[1]-elapsedTime[1]+60
+                }
+                else{
+                    remainingTime[0] -= elapsedTime[0]
+                    remainingTime[1] -= elapsedTime[1]
+                }
+
+                const user = await User.findOne({regNo: req.session.user.regNo})
+                const attempted = JSON.parse(user.attempted)
+                const {subdomain} = req.session.user.test.testDetails
+                attempted[`${subdomain}`] = true
+                await User.updateOne({regNo: user.regNo},
+                    {$set: {attempted: JSON.stringify(attempted), timeLeftToAttempt: remainingTime}})    
+            }
+            else{
+                const time = JSON.parse(req.session.user.test.remainingTime)
+                await User.updateOne({regNo: `${req.session.user.regNo}`},
+                {$set: {timeLeftToAttempt: time}})
+                // console.log(user)
+            }
         }
         catch(err){
             console.error(err)
